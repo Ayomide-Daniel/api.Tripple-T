@@ -15,12 +15,8 @@ class Bottle extends Model
         'name',
     ];
 
-    /**
-     * Write code on Method
-     *
-     * @return response()
-     */
     protected $casts = [
-        'name' => BottleNameEnum::class
+        'created_at' => 'timestamp',
+        'updated_at' => 'timestamp',
     ];
 }

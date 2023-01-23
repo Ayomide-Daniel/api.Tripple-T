@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\Customer\BottleController;
+use App\Http\Controllers\Admin\AdminBottleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +18,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->group(function () {
+    Route::group([
+        'prefix' => 'auth',
+        'as' => 'auth.',
+    ], function () {
+        Route::post('register', [AuthenticationController::class, 'register']);
+        Route::post('login', [AuthenticationController::class, 'login']);
+    });
+    
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
@@ -22,10 +33,16 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::group([
-        'namespace' => 'Customer',
-        'prefix' => 'customer',
-        'as' => 'customer.',
+        'prefix' => 'admin',
+        'as' => 'admin.',
     ], function () {
-        Route::apiResource('bottles', 'BottleController');
+        Route::apiResource('bottles', AdminBottleController::class);
+        Route::post('/login', [AuthenticationController::class, 'adminLogin']);
+    });
+
+    Route::group([
+        'as' => 'bottle.',
+    ], function () {
+        Route::apiResource('bottles', BottleController::class);
     });
 });

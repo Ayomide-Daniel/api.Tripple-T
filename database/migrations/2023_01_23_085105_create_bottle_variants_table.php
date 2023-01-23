@@ -17,9 +17,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('bottle_id')->constrained();
             $table->string('name');
+            $table->string('slug');
             $table->integer('price');
             $table->string('description');
             $table->timestamps();
+
+            $table->unique(['bottle_id', 'name']);
         });
     }
 

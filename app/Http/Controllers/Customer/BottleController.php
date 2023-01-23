@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Models\BottleVariant;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Resources\ApiResponse;
+use App\Http\Resources\BottleResource;
 
 class BottleController extends Controller
 {
@@ -14,17 +16,19 @@ class BottleController extends Controller
      */
     public function index()
     {
-        //
+        $variants = BottleVariant::with('bottle')->get();
+
+        return new ApiResponse($variants);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  BottleVariant  $bottle
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(BottleVariant $bottle)
     {
-        //
+        return new ApiResponse($bottle);
     }
 }
