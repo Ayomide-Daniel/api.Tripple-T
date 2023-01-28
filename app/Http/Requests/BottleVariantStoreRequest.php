@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\BaseFormRequest;
 
-class BottleUpdateRequest extends BaseFormRequest
+class BottleVariantStoreRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,16 +25,15 @@ class BottleUpdateRequest extends BaseFormRequest
     public function rules()
     {
         return [
-            'bottle_id' => 'nullable|integer|exists:bottles,id',
+            'bottle_id' => 'required|integer|exists:bottles,id',
             /**
              * There is a unique constraint on the bottle_id & name column of the bottle_variants table.
              */
-            'name' => ["nullable", "string", Rule::unique('bottle_variants')->where(function ($query) {
-                // Select the id from the route params not request body.
-                return $query->where('bottle_id', $this->bottle_id)->where('id', '!=', $this->route('bottle'));
+            'name' => ["required", "string", Rule::unique('bottle_variants')->where(function ($query) {
+                return $query->where('bottle_id', $this->bottle_id);
             })],
-            'price' => 'nullable|integer',
-            'description' => 'nullable|string',
+            'price' => 'required|integer',
+            'description' => 'required|string',
         ];
-    }
+    }   
 }

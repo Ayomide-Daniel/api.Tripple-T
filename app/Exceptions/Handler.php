@@ -3,9 +3,10 @@
 namespace App\Exceptions;
 
 use Throwable;
+use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class Handler extends ExceptionHandler
 {
@@ -64,6 +65,24 @@ class Handler extends ExceptionHandler
                 "status" => false,
                 "message" => $e->getMessage(),
             ], 400);
+        });
+
+        // Unauthorized
+        $this->renderable(function (UnauthorizedException $e, $request) {
+            return response()->json([
+                "status" => false,
+                "message" => $e->getMessage(),
+            ], 403);
+        });
+
+        // ErrorException
+        $this->renderable(function (\ErrorException $e, $request) {
+            if (!config('app.debug')) {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Oops! Something went wrong. Please try again later.",
+                ], 500);
+            }
         });
     }
 }

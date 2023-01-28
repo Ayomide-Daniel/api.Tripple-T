@@ -3,9 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\UserRole;
+use App\Enums\RoleNameEnum;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -44,8 +47,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // hash password
-    // set slug attribute from bottle_id and name
+    // Hash password
     protected static function boot()
     {
         parent::boot();
@@ -55,4 +57,35 @@ class User extends Authenticatable
         });
     }
 
+    /**
+     * Get the user's role.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function roles(): HasMany
+    {
+        return $this->hasMany(UserRole::class, 'user_id');
+    }
+
+    // Check if user is an admin
+    public function isAdmin()
+    {
+        $user_roles = $this->roles()->get();
+
+        foreach ($user_roles as $user_role) {
+            return $user_role->role_id === RoleNameEnum::ADMIN->value;
+        }
+        return false;
+    }
+
+    // Check if user is a worker
+    public function isWorker()
+    {
+        $user_roles = $this->roles()->get();
+
+        foreach ($user_roles as $user_role) {
+            return $user_role->role_id === RoleNameEnum::WORKER->value;
+        }
+        return false;
+    }
 }

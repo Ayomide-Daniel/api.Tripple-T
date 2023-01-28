@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\BaseFormRequest;
 
-class UserStoreRequest extends BaseFormRequest
+class UserRegisterRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

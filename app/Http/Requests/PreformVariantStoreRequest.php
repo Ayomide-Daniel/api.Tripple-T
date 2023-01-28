@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use App\Http\Requests\BaseFormRequest;
 
-class PreformStoreRequest extends BaseFormRequest
+class PreformVariantStoreRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,9 @@ class PreformStoreRequest extends BaseFormRequest
     public function rules()
     {
         return [
-            'name' => ["required", "string"],
+            'name' => ["required", "string", Rule::unique('preform_variants')->where(function ($query) {
+                return $query->where('preform_id', $this->preform_id);
+            })],
         ];
     }    
 }

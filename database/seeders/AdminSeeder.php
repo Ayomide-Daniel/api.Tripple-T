@@ -23,7 +23,7 @@ class AdminSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'ayomidedaniel00@gmail.com',
             'phone_number' => '09035294280',
-            'password' => Hash::make('password'),
+            'password' => 'password', // this is encrypted in the User model
         ]);
 
         UserRole::create([

@@ -19,12 +19,12 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        $roles = RoleNameEnum::cases();
+        Role::create([
+            'name' => 'admin',
+        ]);
 
-        foreach ($roles as $key => $role) {
-            Role::create([
-                'name' => $role,
-            ]);
-        }
+        Role::create([
+            'name' => 'worker',
+        ]);
     }
 }

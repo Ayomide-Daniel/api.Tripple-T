@@ -7,20 +7,24 @@ use App\Models\UserRole;
 use App\Enums\RoleNameEnum;
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserLoginRequest;
+use App\Http\Requests\UserRegisterRequest;
+use App\Models\Role;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class AuthenticationController extends Controller
 {
     /**
      * Register a new user
      * 
-     * @param UserStoreRequest $request
+     * @param UserRegisterRequest $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function register(UserStoreRequest $request)
+    public function register(UserRegisterRequest $request)
     {
         $validated = $request->validated();
 
@@ -30,82 +34,68 @@ class AuthenticationController extends Controller
 
         return new ApiResponse([
             'token' => $token,
-        ]);
+        ], "Registration successful");
     }
 
     /**
      * Login a user
      * 
-     * @param Request $request
+     * @param UserLoginRequest $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request)
+    public function login(UserLoginRequest $request)
     {
-        try {
-            $validated = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required|string'
-            ]);
-    
-            $user = User::where('email', $validated['email'])->first();
-    
-            if (!$user || !Hash::check($validated['password'], $user->password)) {
-                throw new \Exception('Invalid credentials');
-            }
-    
-            $token = $user->createToken(bin2hex(random_bytes(32)))->plainTextToken;
-    
-            return new ApiResponse([
-                'token' => $token,
-            ]);
-        } catch (\Throwable $th) {
-            if ($th instanceof ValidationException) {
-                return response()->json([
-                    "message" => $th->validator->errors()->first(),
-                ], 422);
-            }
-            
-            return response()->json([
-                'message' => $th->getMessage(),
-            ], 500);
+        $validated = $request->validated();
+
+        $user = User::where('email', $validated['email'])->first();
+        
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
+            throw new BadRequestException('Invalid credentials');
         }
+
+        // Get login type from query string
+        $login_type = $request->query('type') ?? '';
+
+        $this->checkUserRole($user, $login_type);
+
+        $token = $user->createToken(bin2hex(random_bytes(32)))->plainTextToken;
+    
+        Auth::login($user);
+
+        return new ApiResponse([
+            'token' => $token,
+        ], "Login successful");
     }
 
-    // public  function adminLogin(Request $request)
-    // {
-    //     try {
-    //         $validated = $request->validate([
-    //             'email' => 'required|email',
-    //             'password' => 'required|string'
-    //         ]);
-    
-    //         $user = User::where('email', $validated['email'])->first();
-    
-    //         if (!$user || !Hash::check($validated['password'], $user->password)) {
-    //             throw new \Exception('Invalid credentials');
-    //         }
-    
-    //         $check_user_role = UserRole::where(['user_id' => $user->id, 'role_id' => RoleNameEnum::ADMIN])->first();
-    
-    //         if (!$check_user_role) {
-    //             throw new \Exception('You are not an admin');
-    //         }
-    
-    //         $token = $user->createToken(bin2hex(random_bytes(32)))->plainTextToken;
-    
-    //         return new ApiResponse([
-    //             'token' => $token,
-    //         ]);
-    //     } catch (\Throwable $th) {
-    //         if ($th instanceof ValidationException) {
-    //             return response()->json([
-    //                 "message" => $th->validator->errors()->first(),
-    //             ], 422);
-    //         }
-    //         return response()->json([
-    //             'message' => $th->getMessage(),
-    //         ], 500);
-    //     }
-    // }
+    private function checkUserRole(User $user, string $login_type = '')
+    {
+        if ($login_type == '') {
+            return true;
+        }
+
+        $roles = Role::all();
+
+        $role_names = array_map(function ($role) {
+            return $role['name'];
+        }, $roles->toArray());
+
+        $dict_roles = [];
+
+        foreach ($roles as $key => $role) {
+            $dict_roles[$role->name] = $role->id;
+        }
+
+        if ($login_type != '' && !in_array($login_type, $role_names) ) {
+            throw new BadRequestException('Invalid login type');
+        }
+
+        $check_user_role = UserRole::where(['user_id' => $user->id, 'role_id' => $dict_roles[$login_type]])->first();
+
+        if (!$check_user_role) {
+            throw new BadRequestException('You are not an '. $login_type);
+        }
+
+        return true;
+    }
 }
