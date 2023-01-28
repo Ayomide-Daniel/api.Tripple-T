@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\PreformVariant;
 use App\Http\Resources\ApiResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\PreformVariantStoreRequest;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 

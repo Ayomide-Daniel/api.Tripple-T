@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Models\BottleVariant;
 use App\Http\Resources\ApiResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\BottleVariantStoreRequest;
 use App\Http\Requests\BottleVariantUpdateRequest;
+use App\Policies\BottleVariantPolicy;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class AdminBottleVariantController extends Controller
@@ -21,6 +23,8 @@ class AdminBottleVariantController extends Controller
      */
     public function store(BottleVariantStoreRequest $request)
     {
+        Gate::authorize('create', BottleVariant::class);
+
         $validated = $request->validated();
 
         $bottle_variant = BottleVariant::create($validated);
@@ -37,6 +41,8 @@ class AdminBottleVariantController extends Controller
      */
     public function update(BottleVariantUpdateRequest $request, BottleVariant $bottle_variant)
     {
+        Gate::authorize('update', $bottle_variant);
+
         $validated = $request->validated();
 
         // check if validated is empty
@@ -57,6 +63,8 @@ class AdminBottleVariantController extends Controller
      */
     public function destroy(BottleVariant $bottle_variant)
     {
+        Gate::authorize('delete', $bottle_variant);
+
         $bottle_variant->delete();
 
         return new ApiResponse([], SELF::RESOURCE_NAME . " deleted successfully");

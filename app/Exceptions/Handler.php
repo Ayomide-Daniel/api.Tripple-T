@@ -7,6 +7,7 @@ use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -82,6 +83,16 @@ class Handler extends ExceptionHandler
                     "status" => false,
                     "message" => "Oops! Something went wrong. Please try again later.",
                 ], 500);
+            }
+        });
+
+        // AccessDeniedHttpException
+        $this->renderable(function (AccessDeniedHttpException $e, $request) {
+            if (!config('app.debug')) {
+                return response()->json([
+                    "status" => false,
+                    "message" => $e->getMessage(),
+                ], 403);
             }
         });
     }

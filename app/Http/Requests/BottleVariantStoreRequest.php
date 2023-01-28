@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\BaseFormRequest;
 
 class BottleVariantStoreRequest extends BaseFormRequest
@@ -14,7 +15,7 @@ class BottleVariantStoreRequest extends BaseFormRequest
      */
     public function authorize()
     {
-        return true;
+        return Gate::authorize('create', BottleVariant::class);
     }
 
     /**

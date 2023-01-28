@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\BaseFormRequest;
 
 class PreformVariantStoreRequest extends BaseFormRequest
@@ -14,7 +15,7 @@ class PreformVariantStoreRequest extends BaseFormRequest
      */
     public function authorize()
     {
-        return true;
+        return Gate::authorize('create', PreformVariant::class);
     }
 
     /**
