@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -45,6 +47,23 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // No query results for model
+        // get model name from NotFoundHttpException
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            return response()->json([
+                "status" => false,
+                "message" => $e->getMessage(),
+            ], 404);
+        });
+
+        // Bad request
+        $this->renderable(function (BadRequestException $e, $request) {
+            return response()->json([
+                "status" => false,
+                "message" => $e->getMessage(),
+            ], 400);
         });
     }
 }

@@ -11,6 +11,7 @@ use App\Http\Resources\BottleCollection;
 use App\Http\Requests\BottleStoreRequest;
 use App\Http\Requests\BottleUpdateRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class AdminBottleController extends Controller
 {
@@ -20,16 +21,6 @@ class AdminBottleController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
     {
         //
     }
@@ -46,7 +37,7 @@ class AdminBottleController extends Controller
 
         $bottle = BottleVariant::create($validated);
 
-        return new ApiResponse($bottle);
+        return new ApiResponse($bottle, "Bottle created successfully");
     }
 
     /**
@@ -57,65 +48,40 @@ class AdminBottleController extends Controller
      */
     public function show(BottleVariant $bottle)
     {
-        return new ApiResponse($bottle);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return new ApiResponse($bottle, "Bottle fetched successfully");
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  App\Http\Requests\BottleUpdateRequest
-     * @param  int  $id
+     * @param  BottleVariant  $bottle
      * @return \Illuminate\Http\Response
      */
-    public function update(BottleUpdateRequest $request, $id)
+    public function update(BottleUpdateRequest $request, BottleVariant $bottle)
     {
         $validated = $request->validated();
 
-        $bottle = BottleVariant::findOrFail($id);
+        // check if validated is empty
+        if (empty($validated)) {
+            throw new BadRequestException("No data to update");
+        }
 
         $bottle->update($validated);
 
-        return new ApiResponse($bottle);
+        return new ApiResponse($bottle, "Bottle updated successfully");
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  BottleVariant  $bottle
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(BottleVariant $bottle)
     {
-        try {
-            $bottle = BottleVariant::findOrFail($id);
-    
-            $bottle->delete();
-    
-            return new ApiResponse([]);
-        }
-        catch (\Throwable $th) {
-            if ($th instanceof ModelNotFoundException) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Bottle not found',
-                ], 404);
-            }
+        $bottle->delete();
 
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage(),
-            ], 500);
-        }
+        return new ApiResponse([], "Bottle deleted successfully");
     }
 }

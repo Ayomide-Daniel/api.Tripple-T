@@ -15,44 +15,12 @@ class BottleSeeder extends Seeder
      */
     public function run()
     {
-        Bottle::create([
-          'name' =>  BottleNameEnum::_6CL,
-        ]);
+      $bottles = BottleNameEnum::cases();
 
+      foreach ($bottles as $key => $bottle) {
         Bottle::create([
-          'name' =>  BottleNameEnum::_10CL,
+          'name' => $bottle,
         ]);
-
-        Bottle::create([
-          'name' =>  BottleNameEnum::_125ML,
-        ]);
-
-        Bottle::create([
-          'name' =>  BottleNameEnum::_185ML,
-        ]);
-
-        Bottle::create([
-          'name' =>  BottleNameEnum::_20CL,
-        ]);
-
-        Bottle::create([
-          'name' =>  BottleNameEnum::_25CL,
-        ]);
-
-        Bottle::create([
-          'name' =>  BottleNameEnum::_35CL,
-        ]);
-
-        Bottle::create([
-          'name' =>  BottleNameEnum::_50CL,
-        ]);
-
-        Bottle::create([
-          'name' =>  BottleNameEnum::_60CL,
-        ]);
-
-        Bottle::create([
-          'name' =>  BottleNameEnum::_75CL,
-        ]);
+      }
     }
 }

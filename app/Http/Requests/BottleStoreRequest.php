@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Http\Requests\BaseFormRequest;
 
-class BottleStoreRequest extends FormRequest
+class BottleStoreRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,8 +16,6 @@ class BottleStoreRequest extends FormRequest
     {
         return true;
     }
-
-    protected $stopOnFirstFailure = true;
 
     /**
      * Get the validation rules that apply to the request.
@@ -37,6 +35,5 @@ class BottleStoreRequest extends FormRequest
             'price' => 'required|integer',
             'description' => 'required|string',
         ];
-    }
-    
+    }   
 }

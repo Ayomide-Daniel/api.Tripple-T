@@ -3,9 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseFormRequest;
 
-class BottleUpdateRequest extends FormRequest
+class BottleUpdateRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,8 +16,6 @@ class BottleUpdateRequest extends FormRequest
     {
         return true;
     }
-
-    protected $stopOnFirstFailure = true;
 
     /**
      * Get the validation rules that apply to the request.

@@ -18,7 +18,7 @@ class BottleController extends Controller
     {
         $variants = BottleVariant::with('bottle')->get();
 
-        return new ApiResponse($variants);
+        return new ApiResponse($variants, "Bottles fetched successfully");
     }
 
     /**
@@ -29,6 +29,6 @@ class BottleController extends Controller
      */
     public function show(BottleVariant $bottle)
     {
-        return new ApiResponse($bottle);
+        return new ApiResponse($bottle, "Bottle fetched successfully");
     }
 }

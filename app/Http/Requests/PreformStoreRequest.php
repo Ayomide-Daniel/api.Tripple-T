@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\BaseFormRequest;
 
-class UserStoreRequest extends BaseFormRequest
+class PreformStoreRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,7 @@ class UserStoreRequest extends BaseFormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'email' => 'required|email:filter|unique:users',
-            'phone_number' => 'required|digits:11|unique:users',
-            'password' => 'required|string|min:8',
-            'password_confirmation' => 'required|same:password',
+            'name' => ["required", "string"],
         ];
-    }
+    }    
 }
