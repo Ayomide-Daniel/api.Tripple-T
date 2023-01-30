@@ -14,13 +14,4 @@ class BaseFormRequest extends FormRequest
      * @var bool
      */
     protected $stopOnFirstFailure = true;
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw new HttpResponseException(response()->json([
-            "status" => false,
-            "message" => $validator->errors()->first(),
-        ], 422));
-    }
-
 }

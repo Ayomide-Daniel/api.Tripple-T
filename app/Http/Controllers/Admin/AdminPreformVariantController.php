@@ -57,8 +57,10 @@ class AdminPreformVariantController extends Controller
      */
     public function destroy(PreformVariant $preform_variant)
     {
+        Gate::authorize('delete', $preform_variant);
+
         $preform_variant->delete();
 
-    return new ApiResponse([], SELF::RESOURCE_NAME . " deleted successfully");
+        return new ApiResponse([], SELF::RESOURCE_NAME . " deleted successfully");
     }
 }

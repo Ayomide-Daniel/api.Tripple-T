@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Customer;
 
-use Illuminate\Http\Request;
 use App\Models\PreformVariant;
 use App\Http\Resources\ApiResponse;
 use App\Http\Controllers\Controller;

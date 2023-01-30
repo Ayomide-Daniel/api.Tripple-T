@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserRole;
-use App\Enums\RoleNameEnum;
-use Illuminate\Http\Request;
 use App\Http\Resources\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Models\Role;
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class AuthenticationController extends Controller
@@ -49,7 +46,7 @@ class AuthenticationController extends Controller
         $validated = $request->validated();
 
         $user = User::where('email', $validated['email'])->first();
-        
+
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             throw new BadRequestException('Invalid credentials');
         }
@@ -60,7 +57,7 @@ class AuthenticationController extends Controller
         $this->checkUserRole($user, $login_type);
 
         $token = $user->createToken(bin2hex(random_bytes(32)))->plainTextToken;
-    
+
         Auth::login($user);
 
         return new ApiResponse([
@@ -86,14 +83,14 @@ class AuthenticationController extends Controller
             $dict_roles[$role->name] = $role->id;
         }
 
-        if ($login_type != '' && !in_array($login_type, $role_names) ) {
+        if ($login_type != '' && !in_array($login_type, $role_names)) {
             throw new BadRequestException('Invalid login type');
         }
 
         $check_user_role = UserRole::where(['user_id' => $user->id, 'role_id' => $dict_roles[$login_type]])->first();
 
         if (!$check_user_role) {
-            throw new BadRequestException('You are not an '. $login_type);
+            throw new BadRequestException('You are not an ' . $login_type);
         }
 
         return true;

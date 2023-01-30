@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Throwable;
+use ErrorException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -77,7 +79,7 @@ class Handler extends ExceptionHandler
         });
 
         // ErrorException
-        $this->renderable(function (\ErrorException $e, $request) {
+        $this->renderable(function (ErrorException $e, $request) {
             if (!config('app.debug')) {
                 return response()->json([
                     "status" => false,
@@ -94,6 +96,14 @@ class Handler extends ExceptionHandler
                     "message" => $e->getMessage(),
                 ], 403);
             }
+        });
+
+        // ValidationException
+        $this->renderable(function (ValidationException $e, $request) {
+            return response()->json([
+                "status" => false,
+                "message" => $e->validator->errors()->first(),
+            ], 422);
         });
     }
 }

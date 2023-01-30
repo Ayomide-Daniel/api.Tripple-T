@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Customer;
 use App\Models\BottleVariant;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResponse;
-use App\Http\Resources\BottleResource;
 
 class BottleVariantController extends Controller
 {
